@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Line Chart</title>		
+		<script src="includes/js/Chart.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+		<meta name = "viewport" content = "initial-scale = 1, user-scalable = no">
+		<style>
+			body { font:62.5% "Gill Sans MT","Gill Sans",Arial; color: #666; }
+			table { border-collapse: collapse;}
+			#div_info {position: absolute; top: 0; left: 630px;}
+			.forecast {width: 300px;}
+			.forecast td {font-size: 1.4em; font-weight: bold; color: #333;}
+			#f_upperbound, .upperbound {color: #007929;}
+			#f_lowerbound, .lowerbound {color: #A61A00;}
+			#f_special {color: #044F67;}
+			.price {color: #323232;}
+			li {font-size: 1.2em;}
+			canvas{
+			}
+		</style>
+	</head>
+	<body>
+	<canvas id="canvas" height="450" width="600"></canvas>
+	<div id="div_info">
+		<h1>Forecast</h1>
+		<table class="forecast">
+			<tr>
+				<td>DATE</td><td id="f_date"></td>
+			</tr>
+			<tr>
+				<td>VMA BUY</td><td id="f_upperbound"></td>
+			</tr>
+			<tr>
+				<td>VMA SELL</td><td id="f_lowerbound"></td>
+			</tr>					
+			<tr>
+				<td>VMA SPECIAL BUY</td><td id="f_special"></td>
+			</tr>								
+		</table>
+		<h2>Legend</h2>
+		<ul>
+		<li class="upperbound">VMA BUY</li>		
+		<li class="lowerbound">VMA SELL</li>
+		<li class="price">INDEX PRICE</li>
+		</ul>
+	</div>	
+	<script>
+		$.ajax(
+		{
+			url: "getData",
+			method: "GET",
+			dataType: "json",
+			success: function(data)
+			{
+				var lineChartData = data;
+				var myLine = new Chart(document.getElementById("canvas").getContext("2d")).Line(lineChartData, {animation: false});
+				$("#f_date").text(data.forecast.date);
+				$("#f_upperbound").text(" [PRICE] < " + data.forecast.upperbound);
+				$("#f_lowerbound").text(" [PRICE] > " + data.forecast.lowerbound);
+				if (data.forecast.lowerbound < data.forecast.upperbound)
+					$("#f_special").text(data.forecast.lowerbound + " <= [PRICE] < " + data.forecast.upperbound);
+				else
+					$("#f_special").text("N/A");
+			}
+
+		})
+	</script>
+	</body>
+</html>
